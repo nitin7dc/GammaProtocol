@@ -19,6 +19,20 @@ module.exports = {
       skipDryRun: false,
       gasPrice: 25000000000,
     },
+    polygonZKEVMTestnet: {
+      provider: () =>
+        new HDWalletProvider({
+          privateKeys: [process.env.PRIVATE_KEY],
+          providerOrUrl: 'https://rpc.public.zkevm-test.net',
+        }),
+      network_id: 1442,
+      chainId: 1442,
+      verify: {
+        apiUrl: 'https://api-testnet-zkevm.polygonscan.com/api',
+        apiKey: process.env.ETHERSCAN_API,
+        explorerUrl: 'https://testnet-zkevm.polygonscan.com/',
+      },
+    },
     custom: {
       provider: () =>
         new HDWalletProvider({

@@ -13,9 +13,9 @@ module.exports = async function (callback) {
   try {
     console.log(`Deploying Setup: 🍕`)
 
-    const USDC = '0x0b80e3f7b9038Cc182b1F647F907eD8DB00aC0Ff'
-    const WETH = '0x130C277872F3F03EFF2fEd0C1a03B67D3036FA64'
-    const addressB = '0x4F41b941940005aE25D5ecB0F01BaDbc7065E2dD'
+    const USDC = '0x26C9106B8792052f9c043E4933B5dE8D0F13A14F'
+    const WETH = '0x5453715ece4aC2aF8c43cA25d53D15729C17792c'
+    const addressB = '0x2A09B70fB42efdc2e502E05Cb803b0d2c440595d'
 
     const productSpotShockValue = scaleNum(0.5, 27)
     const day = 60 * 60 * 24
@@ -75,9 +75,9 @@ module.exports = async function (callback) {
     // eth collateralised calls
     await calculator.setUpperBoundValues(weth.address, usdc.address, weth.address, false, timeToExpiry, expiryToValue)
 
-    const oracleAddress = await addressBook.getOracle()
-    const oracle = await Oracle.at(oracleAddress)
-    await oracle.setStablePrice(usdc.address, '100000000')
+    // const oracleAddress = await addressBook.getOracle()
+    // const oracle = await Oracle.at(oracleAddress)
+    // await oracle.setStablePrice(usdc.address, '100000000')
 
     console.log('execution complete')
 
