@@ -33,6 +33,20 @@ module.exports = {
         explorerUrl: 'https://testnet-zkevm.polygonscan.com/',
       },
     },
+    polygonZKEVM: {
+      provider: () =>
+        new HDWalletProvider({
+          privateKeys: [process.env.PRIVATE_KEY],
+          providerOrUrl: 'https://zkevm-rpc.com',
+        }),
+      network_id: 1101,
+      chain_id: 1101,
+      verify: {
+        apiUrl: 'https://api-zkevm.polygonscan.com/api',
+        apiKey: process.env.ETHERSCAN_API,
+        explorerUrl: 'https://zkevm.polygonscan.com',
+      },
+    },
     custom: {
       provider: () =>
         new HDWalletProvider({
