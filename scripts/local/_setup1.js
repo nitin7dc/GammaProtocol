@@ -1,6 +1,6 @@
 const yargs = require('yargs')
 const { utils } = require('ethers')
-const { createScaledNumber: scaleNum } = require('../test/utils')
+const { createScaledNumber: scaleNum } = require('../../test/utils')
 
 const MockERC20 = artifacts.require('MockERC20.sol')
 const AddressBook = artifacts.require('AddressBook.sol')
@@ -11,11 +11,11 @@ const MarginCalculator = artifacts.require('MarginCalculator.sol')
 
 module.exports = async function (callback) {
   try {
-    console.log(`Deploying Setup: 🍕`)
+    console.log(`Setting up Gamma...`)
 
-    const USDC = '0x26C9106B8792052f9c043E4933B5dE8D0F13A14F'
-    const WETH = '0x5453715ece4aC2aF8c43cA25d53D15729C17792c'
-    const addressB = '0x2A09B70fB42efdc2e502E05Cb803b0d2c440595d'
+    const USDC = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+    const WETH = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+    const addressB = '0x66aA1cc1d45A3aDbed1E360d369b3dCcEDEC76dc'
 
     const productSpotShockValue = scaleNum(0.5, 27)
     const day = 60 * 60 * 24
@@ -39,8 +39,8 @@ module.exports = async function (callback) {
     console.log(`controllerAddress at => ${controllerAddress}`)
     const controller = await Controller.at(controllerAddress)
 
-    await controller.setNakedCap(weth.address, utils.parseUnits('5000', 18))
-    await controller.setNakedCap(usdc.address, utils.parseUnits('10000000', 6))
+    // await controller.setNakedCap(weth.address, utils.parseUnits('5000', 18))
+    // await controller.setNakedCap(usdc.address, utils.parseUnits('10000000', 6))
     await controller.refreshConfiguration()
 
     const whitelistAddress = await addressBook.getWhitelist()
@@ -59,30 +59,75 @@ module.exports = async function (callback) {
     // // eth collateralised puts
     // await whitelist.whitelistProduct(weth.address, usdc.address, weth.address, true)
 
-    // set product spot shock values
+    // // set product spot shock values
     const calculator = await MarginCalculator.at(await addressBook.getMarginCalculator())
-    // usd collateralised calls
-    await calculator.setSpotShock(weth.address, usdc.address, usdc.address, false, productSpotShockValue)
-    // usd collateralised puts
-    await calculator.setSpotShock(weth.address, usdc.address, usdc.address, true, productSpotShockValue)
-    // eth collateralised calls
-    await calculator.setSpotShock(weth.address, usdc.address, weth.address, false, productSpotShockValue)
+
+    // // usd collateralised calls
+    // await calculator.setSpotShock(
+    //   weth.address, // underlying
+    //   usdc.address, // strike
+    //   usdc.address, // collateral
+    //   false, // is put
+    //   '0', // _shockValue
+    // )
+    // // usd collateralised puts
+    // await calculator.setSpotShock(
+    //   weth.address, // underlying
+    //   usdc.address, // strike
+    //   usdc.address, // collateral
+    //   true, // is put
+    //   '600000000000000000000000000', // _shockValue
+    // )
+    //
+    // // eth collateralised calls
+    // await calculator.setSpotShock(
+    //   weth.address, // underlying
+    //   usdc.address, // strike
+    //   weth.address, // collateral
+    //   false, // is put
+    //   '600000000000000000000000000', // productSpotShockValue
+    // )
+
     // set expiry to value values
     // usd collateralised calls
-    await calculator.setUpperBoundValues(weth.address, usdc.address, usdc.address, false, timeToExpiry, expiryToValue)
+    await calculator.setUpperBoundValues(
+      weth.address, // underlying
+      usdc.address, // strike
+      usdc.address, // collateral
+      false, // _isPut
+      timeToExpiry,
+      expiryToValue,
+    )
+
     // usd collateralised puts
-    await calculator.setUpperBoundValues(weth.address, usdc.address, usdc.address, true, timeToExpiry, expiryToValue)
+    await calculator.setUpperBoundValues(
+      weth.address, // underlying
+      usdc.address, // strike
+      usdc.address, // collateral
+      true, // _isPut
+      timeToExpiry,
+      expiryToValue,
+    )
+
     // eth collateralised calls
-    await calculator.setUpperBoundValues(weth.address, usdc.address, weth.address, false, timeToExpiry, expiryToValue)
+    await calculator.setUpperBoundValues(
+      weth.address, // underlying
+      usdc.address, // strike
+      weth.address, // collateral
+      false, // _isPut
+      timeToExpiry,
+      expiryToValue,
+    )
 
     // const oracleAddress = await addressBook.getOracle()
     // const oracle = await Oracle.at(oracleAddress)
     // await oracle.setStablePrice(usdc.address, '100000000')
 
-    console.log('execution complete')
+    console.log('gamma setup complete')
 
     callback()
   } catch (err) {
+    console.log(err)
     callback(err)
   }
 }
